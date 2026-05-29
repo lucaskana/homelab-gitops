@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/lucas-kana/homelab-gitops
+    repoURL: 'https://github.com'
     targetRevision: HEAD
     path: apps/nginx
 
