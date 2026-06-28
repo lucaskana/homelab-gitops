@@ -40,6 +40,11 @@ metadata:
   namespace: dev
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
+    # 1. Desativa o redirecionamento forçado nativo do Ingress para HTTPS local
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+    # 2. Permite que o Ingress reconheça os cabeçalhos de TLS terminados na Cloudflare
+    nginx.ingress.kubernetes.io/use-forwarded-headers: "true"
 spec:
   ingressClassName: public # Define que usará o Ingress do MicroK8s
   rules:
