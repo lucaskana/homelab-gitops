@@ -7,15 +7,13 @@ spec:
   replicas: 2
   selector:
     matchLabels:
-      app: python-app # 1. O seletor busca essa label
+      app: python-app
   template:
     metadata:
       labels:
-        app: python-app # 2. O pod recebe essa label
+        app: python-app
     spec:
-      imagePullSecrets:
-      - name: github-registry-secret
-      containers: # 3. Bloco movido para a raiz de spec
+      containers:
       - name: python-app
         image: 192.168.15.210:5000/app-homelab-python:latest
         imagePullPolicy: Always
@@ -28,10 +26,30 @@ metadata:
   name: python-app-service
   namespace: dev 
 spec:
-  type: NodePort
+  type: ClusterIP # Alinhado às boas práticas (seguro e interno)
   ports:
-  - port: 80
-    targetPort: 5000
-    nodePort: 30080
+  - port: 80       # Porta interna do serviço
+    targetPort: 5000 # Porta do contêiner Python
   selector:
-    app: python-app # 4. O serviço se conecta aos pods com essa label exata
+    app: python-app
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: python-app-ingress
+  namespace: dev
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: public # Define que usará o Ingress do MicroK8s
+  rules:
+  - host: app.devtechdojo.com.br
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: python-app-service # Aponta para o seu serviço acima
+            port:
+              number: 80
