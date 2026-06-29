@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: python
+  namespace: argocd # Onde o controlador do ArgoCD está instalado
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/lucaskana/homelab-gitops.git
+    targetRevision: HEAD
+    path: apps/app-python # Pasta do Git onde estão seu Deployment, Service e Ingress
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: dev # Namespace dentro do cluster onde o app Python vai rodar
+  syncPolicy:
+    automated:
+      prune: true     # Deleta recursos no cluster se você apagá-los no Git
+      selfHeal: true  # Corrige o cluster automaticamente se alguém alterar algo manualmente
+
