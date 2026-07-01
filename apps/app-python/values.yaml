@@ -2,7 +2,7 @@ replicaCount: 2
 
 image:
   repository: 192.168.15.210:5000/app-homelab-python
-  tag: v1.0.20
+  tag: v1.0.19
   pullPolicy: Always
 
 service:

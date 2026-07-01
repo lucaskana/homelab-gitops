@@ -3,4 +3,4 @@ name: python-app
 description: Um Chart do Helm para a aplicacao Python do Homelab
 type: application
 version: 1.0.0
-appVersion: "v1.0.20"
+appVersion: "v1.0.19"
