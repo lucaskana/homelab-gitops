@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: python-app
-        image: 192.168.15.210:5000/app-homelab-python:latest
+        image: 192.168.15.210:5000/app-homelab-python:v1.0.20
         imagePullPolicy: Always
         ports:
         - containerPort: 5000
