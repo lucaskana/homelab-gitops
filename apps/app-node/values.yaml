@@ -1,0 +1,25 @@
+replicaCount: 2
+
+image:
+  repository: 192.168.15.210:5000/app-homelab-node
+  tag: v1.0.2
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 5000
+
+ingress:
+  enabled: true
+  className: public
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/use-forwarded-headers: "true"
+  hosts:
+    - host: front.devtechdojo.com.br
+      paths:
+        - path: /
+          pathType: Prefix
