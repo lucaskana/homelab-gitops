@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: python
+  name: node
   namespace: argocd # Onde o controlador do ArgoCD está instalado
 spec:
   project: default
