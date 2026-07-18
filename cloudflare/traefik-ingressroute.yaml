@@ -1,0 +1,15 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: traefik-dashboard
+  namespace: kube-system # Mesmo namespace do Traefik
+spec:
+  entryPoints:
+    - web # Porta 80. Se quiser HTTPS, use 'websecure' e adicione a seção de TLS
+  routes:
+    - match: Host(`portal.devtechdojo.com.br`) # Substitua pelo seu domínio/DNS
+      kind: Rule
+      services:
+        - name: api@internal # Serviço nativo do dashboard do Traefik
+          kind: TraefikService
+

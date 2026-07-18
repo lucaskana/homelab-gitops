@@ -1,0 +1,28 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: TLSOption
+metadata:
+  name: default-tls-options
+  namespace: kube-system
+spec:
+  minVersion: VersionTLS12
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: traefik-dashboard
+  namespace: kube-system
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`://seudominio.com`)
+      kind: Rule
+      services:
+        - name: api@internal
+          kind: TraefikService
+  tls:
+    # Vincula o resolvedor DNS da Cloudflare
+    options:
+      name: default-tls-options
+    secretName: cloudflare-cert
+
