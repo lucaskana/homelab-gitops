@@ -11,6 +11,6 @@ spec:
       kind: Rule
       services:
         # Se o seu ArgoCD app se chama "cluster-infra", o Helm nomeará o serviço como "cluster-infra-grafana"
-        - name: {{ .release.Name }}-grafana 
-          port: {{ .release.Port }}
+        - name: {{ .Release.Name }}-grafana 
+          port: {{ .Release.Port }}
 
