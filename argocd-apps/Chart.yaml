@@ -5,5 +5,5 @@ description: Helm Chart guarda-chuva para a infraestrutura do cluster
 
 dependencies:
   - name: grafana
-    version: "13.1.0"
+    version: "12.7.2"
     repository: "https://grafana-community.github.io/helm-charts"
