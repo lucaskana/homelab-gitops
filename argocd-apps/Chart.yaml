@@ -1,0 +1,9 @@
+apiVersion: v2
+name: cluster-infra-charts
+version: 1.0.0
+description: Helm Chart guarda-chuva para a infraestrutura do cluster
+
+dependencies:
+  - name: grafana
+    version: "13.1.0"
+    repository: "https://grafana-community.github.io/helm-charts"

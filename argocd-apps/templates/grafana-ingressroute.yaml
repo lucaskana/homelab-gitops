@@ -1,0 +1,16 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: grafana-route
+  namespace: {{ .Release.Namespace }} # Vai herdar 'monitoring' definido no ArgoCD
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`.Release.Domain`)
+      kind: Rule
+      services:
+        # Se o seu ArgoCD app se chama "cluster-infra", o Helm nomeará o serviço como "cluster-infra-grafana"
+        - name: {{ .release.Name }}-grafana 
+          port: {{ .release.Port }}
+
