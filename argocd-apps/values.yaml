@@ -1,3 +1,36 @@
+# Configurações do Loki
+loki:
+  auth_enabled: false
+  deploymentMode: SingleBinary
+  deploymentStructure:
+    singleBinary:
+      replicas: 1
+
+# Configurações do Tempo
+tempo:
+  storage:
+    trace:
+      backend: local
+
 grafana:
   domain: monitor.devtechdojo.com.br
   port: 80
+  datasources:
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
+        - name: Loki
+          type: loki
+          access: proxy
+          url: http://{{ .Release.Name }}-loki.monitoring.svc.cluster.local:3100
+          jsonData:
+            derivedFields:
+              - datasourceUid: tempo
+                matcherRegex: '(?:trace_id|traceId)="?(\w+)"?'
+                name: TraceID
+                url: '$${__value.raw}'
+        - name: Tempo
+          type: tempo
+          access: proxy
+          url: http://{{ .Release.Name }}-tempo.monitoring.svc.cluster.local:3100
+          uid: tempo
