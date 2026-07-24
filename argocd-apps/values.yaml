@@ -5,6 +5,23 @@ loki:
   deploymentStructure:
     singleBinary:
       replicas: 1
+  # Define que o armazenamento será local
+  commonConfig:
+    replication_factor: 1
+    path_prefix: /var/loki
+
+  storage:
+    type: filesystem
+    # Correção do erro: Declara os buckets exigidos pelo template do Helm
+    bucketNames:
+      chunks: chunks
+      ruler: ruler
+      admin: admin
+
+  storage_config:
+    filesystem:
+      chunks_directory: /var/loki/chunks
+      rules_directory: /var/loki/rules
 
 # Configurações do Tempo
 tempo:
