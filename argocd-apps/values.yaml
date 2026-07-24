@@ -1,34 +1,6 @@
-# Configurações do Loki
-loki:
-  auth_enabled: false
-  deploymentMode: SingleBinary
-  deploymentStructure:
-    singleBinary:
-      replicas: 1
-  # Define que o armazenamento será local
-  commonConfig:
-    replication_factor: 1
-    path_prefix: /var/loki
-
-  storage:
-    type: filesystem
-    # Correção do erro: Declara os buckets exigidos pelo template do Helm
-    bucketNames:
-      chunks: chunks
-      ruler: ruler
-      admin: admin
-
-  storage_config:
-    filesystem:
-      chunks_directory: /var/loki/chunks
-      rules_directory: /var/loki/rules
-
-# Configurações do Tempo
-tempo:
-  storage:
-    trace:
-      backend: local
-
+# =========================================================================
+# Configurações do Grafana
+# =========================================================================
 grafana:
   domain: monitor.devtechdojo.com.br
   port: 80
@@ -39,7 +11,7 @@ grafana:
         - name: Loki
           type: loki
           access: proxy
-          url: http://{{ .Release.Name }}-loki.monitoring.svc.cluster.local:3100
+          url: http://192.168.15.210:3100
           jsonData:
             derivedFields:
               - datasourceUid: tempo
@@ -49,5 +21,16 @@ grafana:
         - name: Tempo
           type: tempo
           access: proxy
-          url: http://{{ .Release.Name }}-tempo.monitoring.svc.cluster.local:3100
+          url: http://192.168.15.210:3200
           uid: tempo
+        # Adicionado: Fonte de dados do Prometheus
+        - name: Prometheus
+          type: prometheus
+          access: proxy
+          url: http://192.168.15.210:9090
+          jsonData:
+            httpMethod: POST
+            # Vincula o Prometheus ao Loki para você pular de métricas para logs facilmente
+            exemplarTraceIdDestinations:
+              - datasourceUid: tempo
+                name: TraceID
