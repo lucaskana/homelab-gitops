@@ -1,8 +1,8 @@
 replicaCount: 2
 
 image:
-  repository: 192.168.15.210:5000/app-homelab-node
-  tag: v1.0.6
+  repository: 192.168.15.50:5000/app-homelab-node
+  tag: v1.0.9
   pullPolicy: Always
 
 service:
