@@ -1,0 +1,8 @@
+replicaCount: 1
+
+ingress:
+  hosts:
+    - host: hml.app.devtechdojo.com.br
+      paths:
+        - path: /
+          pathType: Prefix

@@ -1,0 +1,8 @@
+replicaCount: 2
+
+ingress:
+  hosts:
+    - host: app.devtechdojo.com.br
+      paths:
+        - path: /
+          pathType: Prefix
