@@ -8,28 +8,35 @@ spec:
   goTemplateOptions: ["missingkey=error"]
 
   generators:
-    - list:
-        elements:
-          - name: node
-            path: apps/app-node
-            namespace: dev
-          - name: python
-            path: apps/app-python
-            namespace: dev
-          - name: nginx
-            path: apps/nginx
-            namespace: dev
+    - matrix:
+        generators:
+          - list:
+              elements:
+                - app: node
+                  path: apps/app-node
+                - app: python
+                  path: apps/app-python
+          - list:
+              elements:
+                - env: hml
+                  namespace: hml
+                - env: prod
+                  namespace: prod
 
   template:
     metadata:
-      name: "{{.name}}"
+      name: "{{.app}}-{{.env}}"
       namespace: argocd
     spec:
       project: default
       source:
         repoURL: https://github.com/lucaskana/homelab-gitops.git
-        targetRevision: develop
+        targetRevision: HEAD
         path: "{{.path}}"
+        helm:
+          valueFiles:
+            - values.yaml
+            - "values-{{.env}}.yaml"
       destination:
         server: https://kubernetes.default.svc
         namespace: "{{.namespace}}"
