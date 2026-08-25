@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/lucaskana/homelab-gitops.git
-    targetRevision: develop
+    targetRevision: HEAD
     path: infrastructure
 
   destination:
