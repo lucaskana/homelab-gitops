@@ -9,7 +9,7 @@ spec:
   source:
     repoURL: https://github.com/lucaskana/homelab-gitops.git
     targetRevision: develop
-    path: applications
+    path: root
 
   destination:
     server: https://kubernetes.default.svc
