@@ -1,0 +1,73 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: grafana
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/managed-by: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+
+  source:
+    repoURL: https://grafana.github.io/helm-charts
+    chart: grafana
+    targetRevision: 8.5.2
+
+    helm:
+      values: |
+        persistence:
+          enabled: true
+          size: 5Gi
+
+        ingress:
+          enabled: true
+          ingressClassName: public
+          hosts:
+            - monitor.devtechdojo.com.br
+          path: /
+          pathType: Prefix
+
+        datasources:
+          datasources.yaml:
+            apiVersion: 1
+            datasources:
+              - name: Loki
+                type: loki
+                access: proxy
+                url: http://192.168.15.210:3100
+                jsonData:
+                  derivedFields:
+                    - datasourceUid: tempo
+                      matcherRegex: '(?:trace_id|traceId)="?(\w+)"?'
+                      name: TraceID
+                      url: '$${__value.raw}'
+              - name: Tempo
+                type: tempo
+                access: proxy
+                url: http://192.168.15.210:3200
+                uid: tempo
+              - name: Prometheus
+                type: prometheus
+                access: proxy
+                url: http://192.168.15.210:9090
+                isDefault: true
+                jsonData:
+                  httpMethod: POST
+                  exemplarTraceIdDestinations:
+                    - datasourceUid: tempo
+                      name: TraceID
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+    syncOptions:
+      - CreateNamespace=true
