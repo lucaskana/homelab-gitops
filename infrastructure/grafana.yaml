@@ -26,7 +26,7 @@ spec:
           enabled: true
           ingressClassName: public
           hosts:
-            - monitor.devtechdojo.com.br
+            - monitori-cloud.devtechdojo.com.br
           path: /
           pathType: Prefix
 
