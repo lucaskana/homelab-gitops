@@ -12,9 +12,10 @@ spec:
   project: default
 
   source:
-    repoURL: https://grafana.github.io/helm-charts
+    # URL atualizada para o novo repositório da comunidade
+    repoURL: https://grafana-community.github.io/helm-charts
     chart: grafana
-    targetRevision: 8.5.2
+    targetRevision: 12.10.1
 
     helm:
       values: |
