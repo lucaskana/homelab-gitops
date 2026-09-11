@@ -13,7 +13,7 @@ spec:
     
     helm:
       values: |
-        # Configurações estritamente aceitas no ConfigMap (Apenas propriedades públicas)
+        # Configurações aceitas estritamente dentro do ConfigMap nativo
         configMap:
           theme: dark
           
@@ -43,23 +43,22 @@ spec:
             filesystem:
               filename: /config/notification.txt
 
-        # Correção 1: Injeção de variáveis de ambiente usando a chave exigida pelo schema ('environment')
-        environment:
+        # Correção 1: Injeção de segredos via variáveis de ambiente no formato correto do chart
+        podVariables:
           AUTHELIA_JWT_SECRET: "substitua_por_um_segredo_longo_e_aleatorio_jwt"
           AUTHELIA_SESSION_SECRET: "substitua_por_um_segredo_longo_e_aleatorio_session"
 
-        # Correção 2: Criação de arquivos adicionais montados pelo Helm usando a chave correta ('secret.files')
-        secret:
-          files:
-            users_database.yml: |
-              users:
-                admin:
-                  disabled: false
-                  displayname: "Administrador"
-                  password: "$argon2id$v=19$m=65536,t=3,p=4$bXlzYWx0c3RyaW5n$O3E0OStpMmE5cTJ1M2k0bzVpNm83dTg" # Senha padrão: authelia
-                  email: admin@devtechdojo.com.br
-                  groups:
-                    - admins
+        # Correção 2: Criação de arquivos adicionais montados pelo Helm no bloco raiz correto
+        files:
+          users_database.yml: |
+            users:
+              admin:
+                disabled: false
+                displayname: "Administrador"
+                password: "$argon2id$v=19$m=65536,t=3,p=4$bXlzYWx0c3RyaW5n$O3E0OStpMmE5cTJ1M2k0bzVpNm83dTg" # Senha: authelia
+                email: admin@devtechdojo.com.br
+                groups:
+                  - admins
 
         # Configuração do armazenamento do banco de dados local
         persistence:
