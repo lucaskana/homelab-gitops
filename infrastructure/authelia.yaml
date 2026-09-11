@@ -1,0 +1,71 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: authelia
+  namespace: argocd
+spec:
+  project: default
+  
+  source:
+    chart: authelia
+    repoURL: https://charts.authelia.com
+    targetRevision: 0.11.20
+    
+    helm:
+      values: |
+        configMap:
+          theme: dark
+          
+          # Ajuste de segurança global obrigatório
+          jwt_secret: 'substitua_por_um_segredo_longo_e_aleatorio_jwt'
+          
+          session:
+            cookies:
+              - domain: devtechdojo.com.br
+                subdomain: auth
+                default_redirection_url: https://devtechdojo.com.br
+          
+          # 1. Correção: Controle de acesso básico obrigatório
+          access_control:
+            default_policy: 'deny'
+            rules:
+              - domain: '*.devtechdojo.com.br'
+                policy: 'two_factor'
+
+          # 2. Correção: Onde os usuários ficam armazenados
+          authentication_backend:
+            password_reset:
+              disable: true
+            file:
+              path: /config/users_database.yml
+
+          # 3. Correção: Banco de dados (usando o volume persistente configurado abaixo)
+          storage:
+            local:
+              path: /config/db.sqlite3
+
+          # 4. Correção: Notificador de e-mails em modo texto/arquivo
+          notifier:
+            filesystem:
+              filename: /config/notification.txt
+
+        # Configuração do armazenamento do banco de dados local
+        persistence:
+          enabled: true
+          size: 2Gi
+
+        # Estrutura do Ingress aceita pelo schema do Authelia
+        ingress:
+          enabled: true
+          className: "traefik"
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: authelia
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
