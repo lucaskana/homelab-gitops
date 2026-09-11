@@ -8,16 +8,14 @@ spec:
   
   source:
     chart: authelia
-    repoURL: https://charts.authelia.com
+    repoURL: https://charts.authelia.com    
     targetRevision: 0.11.20
     
     helm:
       values: |
+        # Configurações estritamente aceitas no ConfigMap (Sem segredos/secrets)
         configMap:
           theme: dark
-          
-          # Ajuste de segurança global obrigatório
-          jwt_secret: 'substitua_por_um_segredo_longo_e_aleatorio_jwt'
           
           session:
             cookies:
@@ -25,29 +23,45 @@ spec:
                 subdomain: auth
                 default_redirection_url: https://devtechdojo.com.br
           
-          # 1. Correção: Controle de acesso básico obrigatório
           access_control:
             default_policy: 'deny'
             rules:
               - domain: '*.devtechdojo.com.br'
                 policy: 'two_factor'
 
-          # 2. Correção: Onde os usuários ficam armazenados
           authentication_backend:
             password_reset:
               disable: true
             file:
               path: /config/users_database.yml
 
-          # 3. Correção: Banco de dados (usando o volume persistente configurado abaixo)
           storage:
             local:
               path: /config/db.sqlite3
 
-          # 4. Correção: Notificador de e-mails em modo texto/arquivo
           notifier:
             filesystem:
               filename: /config/notification.txt
+
+        # Passando os segredos via variáveis de ambiente aceitas pelo Chart do Authelia
+        env:
+          - name: AUTHELIA_JWT_SECRET
+            value: "substitua_por_um_segredo_longo_e_aleatorio_jwt"
+          - name: AUTHELIA_SESSION_SECRET
+            value: "substitua_por_um_segredo_longo_e_aleatorio_session"
+
+        # Geração do banco de dados de usuários obrigatório
+        pod:
+          files:
+            /config/users_database.yml: |
+              users:
+                admin:
+                  disabled: false
+                  displayname: "Administrador"
+                  password: "$argon2id$v=19$m=65536,t=3,p=4$bXlzYWx0c3RyaW5n$O3E0OStpMmE5cTJ1M2k0bzVpNm83dTg" # Senha: authelia
+                  email: admin@devtechdojo.com.br
+                  groups:
+                    - admins
 
         # Configuração do armazenamento do banco de dados local
         persistence:
@@ -60,7 +74,7 @@ spec:
           className: "traefik"
 
   destination:
-    server: https://kubernetes.default.svc
+    server: https://default.svc
     namespace: authelia
 
   syncPolicy:
