@@ -8,12 +8,12 @@ spec:
   
   source:
     chart: authelia
-    repoURL: https://charts.authelia.com    
+    repoURL: https://charts.authelia.com
     targetRevision: 0.11.20
     
     helm:
       values: |
-        # Configurações estritamente aceitas no ConfigMap (Sem segredos/secrets)
+        # Configurações estritamente aceitas no ConfigMap (Apenas propriedades públicas)
         configMap:
           theme: dark
           
@@ -43,22 +43,20 @@ spec:
             filesystem:
               filename: /config/notification.txt
 
-        # Passando os segredos via variáveis de ambiente aceitas pelo Chart do Authelia
-        env:
-          - name: AUTHELIA_JWT_SECRET
-            value: "substitua_por_um_segredo_longo_e_aleatorio_jwt"
-          - name: AUTHELIA_SESSION_SECRET
-            value: "substitua_por_um_segredo_longo_e_aleatorio_session"
+        # Correção 1: Injeção de variáveis de ambiente usando a chave exigida pelo schema ('environment')
+        environment:
+          AUTHELIA_JWT_SECRET: "substitua_por_um_segredo_longo_e_aleatorio_jwt"
+          AUTHELIA_SESSION_SECRET: "substitua_por_um_segredo_longo_e_aleatorio_session"
 
-        # Geração do banco de dados de usuários obrigatório
-        pod:
+        # Correção 2: Criação de arquivos adicionais montados pelo Helm usando a chave correta ('secret.files')
+        secret:
           files:
-            /config/users_database.yml: |
+            users_database.yml: |
               users:
                 admin:
                   disabled: false
                   displayname: "Administrador"
-                  password: "$argon2id$v=19$m=65536,t=3,p=4$bXlzYWx0c3RyaW5n$O3E0OStpMmE5cTJ1M2k0bzVpNm83dTg" # Senha: authelia
+                  password: "$argon2id$v=19$m=65536,t=3,p=4$bXlzYWx0c3RyaW5n$O3E0OStpMmE5cTJ1M2k0bzVpNm83dTg" # Senha padrão: authelia
                   email: admin@devtechdojo.com.br
                   groups:
                     - admins
@@ -74,7 +72,7 @@ spec:
           className: "traefik"
 
   destination:
-    server: https://kubernetes.default.svc    
+    server: https://kubernetes.default.svc
     namespace: authelia
 
   syncPolicy:
