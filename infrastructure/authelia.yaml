@@ -8,46 +8,47 @@ spec:
   
   source:
     chart: authelia
-    repoURL: https://authelia.com
+    repoURL: https://charts.authelia.com
     targetRevision: 0.11.20
     
     helm:
       values: |
-        # CORREÇÃO CRUCIAL: O Chart oficial usa a chave 'config' e não 'configMap'
-        config:
-          theme: dark
-          
-          jwt_secret: "substitua_por_um_segredo_longo_e_aleatorio_jwt"
-          
-          session:
-            secret: "substitua_por_um_segredo_longo_e_aleatorio_session"
-            cookies:
-              - domain: devtechdojo.com.br
-                subdomain: auth
-                default_redirection_url: https://devtechdojo.com.br
-          
-          access_control:
-            default_policy: 'deny'
-            rules:
-              - domain: '*.devtechdojo.com.br'
-                policy: 'two_factor'
+        # CORREÇÃO DEFINITIVA: Injetar o arquivo textual puro para o Helm mapear
+        configMap:
+          configuration.yaml: |
+            theme: dark
+            
+            jwt_secret: "substitua_por_um_segredo_longo_e_aleatorio_jwt"
+            
+            session:
+              secret: "substitua_por_um_segredo_longo_e_aleatorio_session"
+              cookies:
+                - domain: devtechdojo.com.br
+                  subdomain: auth
+                  default_redirection_url: https://devtechdojo.com.br
+            
+            access_control:
+              default_policy: 'deny'
+              rules:
+                - domain: '*.devtechdojo.com.br'
+                  policy: 'two_factor'
 
-          authentication_backend:
-            password_reset:
-              disable: true
-            file:
-              path: /config/users_database.yml
+            authentication_backend:
+              password_reset:
+                disable: true
+              file:
+                path: /config/users_database.yml
 
-          storage:
-            encryption_key: "substitua_por_um_segredo_longo_e_aleatorio_storage"
-            local:
-              path: /config/db.sqlite3
+            storage:
+              encryption_key: "substitua_por_um_segredo_longo_e_aleatorio_storage"
+              local:
+                path: /config/db.sqlite3
 
-          notifier:
-            filesystem:
-              filename: /config/notification.txt
+            notifier:
+              filesystem:
+                filename: /config/notification.txt
 
-        # Arquivos adicionais que serão injetados no container
+        # Arquivos adicionais que o Helm monta automaticamente na pasta /config
         files:
           users_database.yml: |
             users:
