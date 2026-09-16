@@ -8,7 +8,7 @@ spec:
   
   source:
     chart: authelia
-    repoURL: https://authelia.com
+    repoURL: https://charts.authelia.com
     targetRevision: 0.11.20
     
     helm:
