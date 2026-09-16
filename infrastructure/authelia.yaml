@@ -13,59 +13,60 @@ spec:
     
     helm:
       values: |
-        # Configurações aceitas estritamente dentro do ConfigMap nativo
+        # Configurações aceitas estritamente dentro do ConfigMap nativo do Chart
         configMap:
           theme: dark
           
+          # Correção 1: Ajuste do JWT e Encryption Key exigidos pelo erro de storage
+          jwt_secret: "substitua_por_um_segredo_longo_e_aleatorio_jwt"
+          storage:
+            encryption_key: "substitua_por_um_segredo_longo_e_aleatorio_storage"
+            local:
+              path: /config/db.sqlite3
+          
+          # Correção 2: Ajuste de sessões obrigatórias
           session:
+            secret: "substitua_por_um_segredo_longo_e_aleatorio_session"
             cookies:
               - domain: devtechdojo.com.br
                 subdomain: auth
                 default_redirection_url: https://devtechdojo.com.br
           
+          # Correção 3: Inclusão de regras para matar o erro de 'access_control'
           access_control:
             default_policy: 'deny'
             rules:
               - domain: '*.devtechdojo.com.br'
                 policy: 'two_factor'
 
+          # Correção 4: Backend de autenticação apontando para o arquivo criado abaixo
           authentication_backend:
             password_reset:
               disable: true
             file:
               path: /config/users_database.yml
 
-          storage:
-            local:
-              path: /config/db.sqlite3
-
+          # Correção 5: Notificador local para matar o erro de 'notifier'
           notifier:
             filesystem:
               filename: /config/notification.txt
 
-        # Correção 1: Injeção de segredos via variáveis de ambiente no formato correto do chart
-        podVariables:
-          AUTHELIA_JWT_SECRET: "substitua_por_um_segredo_longo_e_aleatorio_jwt"
-          AUTHELIA_SESSION_SECRET: "substitua_por_um_segredo_longo_e_aleatorio_session"
-
-        # Correção 2: Criação de arquivos adicionais montados pelo Helm no bloco raiz correto
+        # Criação do arquivo de usuários montado automaticamente pelo Helm na pasta /config
         files:
           users_database.yml: |
             users:
               admin:
                 disabled: false
                 displayname: "Administrador"
-                password: "$argon2id$v=19$m=65536,t=3,p=4$bXlzYWx0c3RyaW5n$O3E0OStpMmE5cTJ1M2k0bzVpNm83dTg" # Senha: authelia
+                password: "$argon2id$v=19$m=65536,t=3,p=4$bXlzYWx0c3RyaW5n$O3E0OStpMmE5cTJ1M2k0bzVpNm83dTg" # Senha padrão: authelia
                 email: admin@devtechdojo.com.br
                 groups:
                   - admins
 
-        # Configuração do armazenamento do banco de dados local
         persistence:
           enabled: true
           size: 2Gi
 
-        # Estrutura do Ingress aceita pelo schema do Authelia
         ingress:
           enabled: true
           className: "traefik"
