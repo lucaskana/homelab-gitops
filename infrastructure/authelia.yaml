@@ -8,23 +8,17 @@ spec:
   
   source:
     chart: authelia
-    repoURL: https://charts.authelia.com
+    repoURL: https://authelia.com
     targetRevision: 0.11.20
     
     helm:
       values: |
-        # Configurações aceitas estritamente dentro do ConfigMap nativo do Chart
-        configMap:
+        # CORREÇÃO CRUCIAL: O Chart oficial usa a chave 'config' e não 'configMap'
+        config:
           theme: dark
           
-          # Correção 1: Ajuste do JWT e Encryption Key exigidos pelo erro de storage
           jwt_secret: "substitua_por_um_segredo_longo_e_aleatorio_jwt"
-          storage:
-            encryption_key: "substitua_por_um_segredo_longo_e_aleatorio_storage"
-            local:
-              path: /config/db.sqlite3
           
-          # Correção 2: Ajuste de sessões obrigatórias
           session:
             secret: "substitua_por_um_segredo_longo_e_aleatorio_session"
             cookies:
@@ -32,26 +26,28 @@ spec:
                 subdomain: auth
                 default_redirection_url: https://devtechdojo.com.br
           
-          # Correção 3: Inclusão de regras para matar o erro de 'access_control'
           access_control:
             default_policy: 'deny'
             rules:
               - domain: '*.devtechdojo.com.br'
                 policy: 'two_factor'
 
-          # Correção 4: Backend de autenticação apontando para o arquivo criado abaixo
           authentication_backend:
             password_reset:
               disable: true
             file:
               path: /config/users_database.yml
 
-          # Correção 5: Notificador local para matar o erro de 'notifier'
+          storage:
+            encryption_key: "substitua_por_um_segredo_longo_e_aleatorio_storage"
+            local:
+              path: /config/db.sqlite3
+
           notifier:
             filesystem:
               filename: /config/notification.txt
 
-        # Criação do arquivo de usuários montado automaticamente pelo Helm na pasta /config
+        # Arquivos adicionais que serão injetados no container
         files:
           users_database.yml: |
             users:
@@ -72,7 +68,7 @@ spec:
           className: "traefik"
 
   destination:
-    server: https://kubernetes.default.svc
+    server: https://default.svc
     namespace: authelia
 
   syncPolicy:
