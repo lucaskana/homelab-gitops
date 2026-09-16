@@ -13,24 +13,18 @@ spec:
     
     helm:
       values: |
-        # 1. Avisa o Helm para NÃO criar o configMap interno dele
-        configMap: {}
+        # 1. Vincula estritamente ao seu ConfigMap customizado do Passo Anterior
+        configMap:
+          existingConfigMap: "authelia-custom-config"
 
-        # 2. Força o Helm a montar o SEU ConfigMap externo no local correto
-        # O Chart oficial do Authelia aceita a propriedade "secret" para injetar o arquivo de configuração
-        secret: authelia-custom-config
-
-        # Mantemos os arquivos de usuários e persistência gerenciados normalmente
-        files:
-          users_database.yml: |
-            users:
-              admin:
-                disabled: false
-                displayname: "Administrador"
-                password: "$argon2id$v=19$m=65536,t=3,p=4$bXlzYWx0c3RyaW5n$O3E0OStpMmE5cTJ1M2k0bzVpNm83dTg"
-                email: admin@devtechdojo.com.br
-                groups:
-                  - admins
+        # 2. Injeta as chaves secretas obrigatórias direto como variáveis de ambiente
+        env:
+          - name: AUTHELIA_JWT_SECRET
+            value: "uma_string_muito_longa_e_aleatoria_para_jwt_aqui"
+          - name: AUTHELIA_SESSION_SECRET
+            value: "uma_string_muito_longa_e_aleatoria_para_session_aqui"
+          - name: AUTHELIA_STORAGE_ENCRYPTION_KEY
+            value: "uma_string_muito_longa_e_aleatoria_para_storage_aqui"
 
         persistence:
           enabled: true
