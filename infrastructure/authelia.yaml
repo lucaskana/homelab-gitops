@@ -25,16 +25,6 @@ spec:
           - name: AUTHELIA_STORAGE_ENCRYPTION_KEY
             value: "uma_string_muito_longa_e_aleatoria_para_storage_aqui"
 
-        # 3. Faz o Kubernetes injetar o seu ConfigMap manual direto na pasta /config como volume puro
-        extraVolumes:
-          - name: custom-config-volume
-            configMap:
-              name: authelia-custom-config
-        
-        extraVolumeMounts:
-          - name: custom-config-volume
-            mountPath: /config
-
         persistence:
           enabled: true
           size: 2Gi
