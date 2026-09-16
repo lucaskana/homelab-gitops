@@ -13,9 +13,8 @@ spec:
     
     helm:
       values: |
-        # 1. Vincula estritamente ao seu ConfigMap customizado do Passo Anterior
-        configMap:
-          existingConfigMap: "authelia-custom-config"
+        # 1. Desativa completamente o bloco que está disparando a validação rígida do Schema
+        configMap: {}
 
         # 2. Injeta as chaves secretas obrigatórias direto como variáveis de ambiente
         env:
@@ -25,6 +24,16 @@ spec:
             value: "uma_string_muito_longa_e_aleatoria_para_session_aqui"
           - name: AUTHELIA_STORAGE_ENCRYPTION_KEY
             value: "uma_string_muito_longa_e_aleatoria_para_storage_aqui"
+
+        # 3. Faz o Kubernetes injetar o seu ConfigMap manual direto na pasta /config como volume puro
+        extraVolumes:
+          - name: custom-config-volume
+            configMap:
+              name: authelia-custom-config
+        
+        extraVolumeMounts:
+          - name: custom-config-volume
+            mountPath: /config
 
         persistence:
           enabled: true
