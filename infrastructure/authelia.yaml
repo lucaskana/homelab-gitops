@@ -16,15 +16,6 @@ spec:
         # 1. Desativa completamente o bloco que está disparando a validação rígida do Schema
         configMap: {}
 
-        # 2. Injeta as chaves secretas obrigatórias direto como variáveis de ambiente
-        env:
-          - name: AUTHELIA_JWT_SECRET
-            value: "uma_string_muito_longa_e_aleatoria_para_jwt_aqui"
-          - name: AUTHELIA_SESSION_SECRET
-            value: "uma_string_muito_longa_e_aleatoria_para_session_aqui"
-          - name: AUTHELIA_STORAGE_ENCRYPTION_KEY
-            value: "uma_string_muito_longa_e_aleatoria_para_storage_aqui"
-
         persistence:
           enabled: true
           size: 2Gi
