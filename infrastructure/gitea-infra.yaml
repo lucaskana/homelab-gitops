@@ -1,0 +1,47 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: gitea
+  namespace: argocd # Namespace onde o ArgoCD está instalado
+spec:
+  project: default
+  source:
+    chart: gitea
+    repoURL: https://dl.gitea.io/charts/
+    targetRevision: 12.7.0 # Substitua pela versão maior (major) desejada do chart
+    helm:
+      # Você pode definir parâmetros do values.yaml diretamente aqui
+      values: |
+        gitea:
+          config:
+            APP_NAME: "Meu Gitea"
+            RUN_MODE: prod
+        
+        # Exemplo de configuração de Ingress (Opcional - remova se não usar)
+        ingress:
+          enabled: true
+          className: traefik
+          hosts:
+            - host: repo.devtechdojo.com.br
+              paths:
+                - path: /
+                  pathType: Prefix
+
+        # Desativa o banco de dados em Alta Disponibilidade padrão do chart...
+        postgresql-ha:
+          enabled: false
+
+        # ...e ativa o PostgreSQL convencional (Single Pod)
+        postgresql:
+          enabled: true
+          persistence:
+            size: 8Gi
+  destination:
+    server: https://kubernetes.default.svc # Cluster local
+    namespace: gitea # Namespace de destino do Gitea
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true # Cria o namespace 'gitea' automaticamente se não existir
