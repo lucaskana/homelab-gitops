@@ -12,8 +12,6 @@ spec:
     helm:
       values: |
         configMap:
-          # A URL principal fica na raiz do configMap
-          #authelia_url: https://auth.devtechdojo.com.br
           session:
             cookies:
               - domain: auth.devtechdojo.com.br
@@ -21,20 +19,19 @@ spec:
             file:
               path: /config/secrets/users_database.yml
               watch: true
-          #authentication_backend:
-          #  file:
-          #    enabled: true
           storage:
             local:
               enabled: true
           notifier:
             filesystem:
               enabled: true
-          secret:
-            existingSecret: authelia-secrets # Sua secret principal de chaves/senhas
-            files:
-              users_database.yml:
-                secretName: authelia-users # Nome da secret que criamos no Passo 1
+
+        # CORREÇÃO: Fora do configMap, na raiz dos valores do Helm
+        secret:
+          existingSecret: authelia-secrets
+          files:
+            users_database.yml:
+              secretName: authelia-users
 
   destination:
     server: https://kubernetes.default.svc
