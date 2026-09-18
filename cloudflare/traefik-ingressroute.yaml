@@ -5,11 +5,12 @@ metadata:
   namespace: kube-system # Mesmo namespace do Traefik
 spec:
   entryPoints:
-    - web # Porta 80. Se quiser HTTPS, use 'websecure' e adicione a seção de TLS
+    - websecure # Porta 80. Se quiser HTTPS, use 'websecure' e adicione a seção de TLS
   routes:
     - match: Host(`portal.devtechdojo.com.br`) # Substitua pelo seu domínio/DNS
       kind: Rule
       services:
         - name: api@internal # Serviço nativo do dashboard do Traefik
           kind: TraefikService
-
+      middlewares:
+        - name: dashboard-basic-auth # Ativa a senha nesta rota

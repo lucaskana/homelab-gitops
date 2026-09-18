@@ -12,7 +12,7 @@ service:
 
 ingress:
   enabled: true
-  className: public
+  className: traefik
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
