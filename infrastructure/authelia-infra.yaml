@@ -19,7 +19,11 @@ spec:
               - domain: auth.devtechdojo.com.br
           authentication_backend:
             file:
-              enabled: true
+              path: /config/secrets/users_database.yml
+              watch: true
+          #authentication_backend:
+          #  file:
+          #    enabled: true
           storage:
             local:
               enabled: true
