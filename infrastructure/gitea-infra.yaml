@@ -16,16 +16,6 @@ spec:
           config:
             APP_NAME: "Meu Gitea"
             RUN_MODE: prod
-        
-        # Exemplo de configuração de Ingress (Opcional - remova se não usar)
-        ingress:
-          enabled: true
-          className: traefik
-          hosts:
-            - host: repo.devtechdojo.com.br
-              paths:
-                - path: /
-                  pathType: Prefix
 
         # Desativa o banco de dados em Alta Disponibilidade padrão do chart...
         postgresql-ha:
