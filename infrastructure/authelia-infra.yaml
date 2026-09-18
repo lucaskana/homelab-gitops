@@ -12,7 +12,7 @@ spec:
     helm:
       values: |
         configMap:
-          address: https://devtechdojo.com.br
+         # address: https://devtechdojo.com.br
           session:
             cookies:
               - domain: auth.devtechdojo.com.br
