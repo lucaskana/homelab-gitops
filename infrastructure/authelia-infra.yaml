@@ -12,15 +12,16 @@ spec:
     helm:
       values: |
         configMap:
+          address: https://devtechdojo.com.br
           session:
             cookies:
               - domain: auth.devtechdojo.com.br
-          # HABILITAÇÃO OFICIAL DO ARQUIVO DE USUÁRIOS NO CHART:
+          # CASAMENTO EXATO COM OS TEMPLATES DO CHART 0.11.22:
           authentication_backend:
             ldap:
-              enabled: false # Desativa explicitamente o LDAP padrão do Chart
+              enabled: false
             file:
-              enabled: true  # Ativa o backend por arquivo no template do Helm
+              enabled: true
               path: /config/users_database.yml
               watch: true
           
@@ -31,7 +32,7 @@ spec:
             filesystem:
               enabled: true
 
-          # DEFINIÇÃO CORRETA DE REGRAS PARA SUMIR O ERRO FATAL:
+          # IMPORTANTE: Garante que as regras de controle de acesso existam textualmente
           access_control:
             default_policy: one_factor
             rules: []
