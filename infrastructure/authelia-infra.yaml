@@ -15,11 +15,15 @@ spec:
           session:
             cookies:
               - domain: auth.devtechdojo.com.br
+          # HABILITAÇÃO OFICIAL DO ARQUIVO DE USUÁRIOS NO CHART:
           authentication_backend:
+            ldap:
+              enabled: false # Desativa explicitamente o LDAP padrão do Chart
             file:
-              # Aponta para o caminho onde vamos montar o arquivo usando os volumes do pod
+              enabled: true  # Ativa o backend por arquivo no template do Helm
               path: /config/users_database.yml
               watch: true
+          
           storage:
             local:
               enabled: true
@@ -27,8 +31,10 @@ spec:
             filesystem:
               enabled: true
 
+          # DEFINIÇÃO CORRETA DE REGRAS PARA SUMIR O ERRO FATAL:
           access_control:
             default_policy: one_factor
+            rules: []
 
         secret:
           existingSecret: authelia-secrets
