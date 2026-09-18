@@ -1,0 +1,38 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: authelia
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: authelia
+    repoURL: https://charts.authelia.com
+    targetRevision: 0.11.22
+    helm:
+      values: |
+        configMap:
+          # A URL principal fica na raiz do configMap
+          #authelia_url: https://auth.devtechdojo.com.br
+          session:
+            cookies:
+              - domain: auth.devtechdojo.com.br
+          authentication_backend:
+            file:
+              enabled: true
+          storage:
+            local:
+              enabled: true
+          notifier:
+            filesystem:
+              enabled: true
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: authelia
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
