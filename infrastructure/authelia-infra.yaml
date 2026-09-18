@@ -17,7 +17,8 @@ spec:
               - domain: auth.devtechdojo.com.br
           authentication_backend:
             file:
-              path: /config/secrets/users_database.yml
+              # Aponta para o caminho onde vamos montar o arquivo usando os volumes do pod
+              path: /config/users_database.yml
               watch: true
           storage:
             local:
@@ -26,12 +27,20 @@ spec:
             filesystem:
               enabled: true
 
-        # CORREÇÃO: Fora do configMap, na raiz dos valores do Helm
+        # Força o Chart a usar a sua secret existente para as variáveis de ambiente globais
         secret:
           existingSecret: authelia-secrets
-          files:
-            users_database.yml:
-              secretName: authelia-users
+
+        # Injeta o arquivo usando o bloco de customização do Pod nativo do Chart
+        pod:
+          extraVolumes:
+            - name: users-database
+              secret:
+                secretName: authelia-users
+          extraVolumeMounts:
+            - name: users-database
+              mountPath: /config/users_database.yml
+              subPath: users_database.yml
 
   destination:
     server: https://kubernetes.default.svc
