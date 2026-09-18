@@ -26,6 +26,11 @@ spec:
           notifier:
             filesystem:
               enabled: true
+          secret:
+            existingSecret: authelia-secrets # Sua secret principal de chaves/senhas
+            files:
+              users_database.yml:
+                secretName: authelia-users # Nome da secret que criamos no Passo 1
 
   destination:
     server: https://kubernetes.default.svc
