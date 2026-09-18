@@ -16,10 +16,16 @@ spec:
           config:
             APP_NAME: "Meu Gitea"
             RUN_MODE: prod
-        ingress:
-          enabled: false # <<--- DESATIVADO AQUI
 
-        # Desativa o banco de dados em Alta Disponibilidade padrão do chart...
+        ingress:
+          enabled: true
+          className: traefik
+          hosts:
+            - host: repo.devtechdojo.com.br
+              paths:
+                - path: /
+                  pathType: Prefix
+
         postgresql-ha:
           enabled: false
 
