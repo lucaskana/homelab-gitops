@@ -11,4 +11,8 @@ spec:
       kind: Rule
       services:
         - name: authelia # Nome exato do serviço do Authelia no Kubernetes
-          port: 80 # Porta padrão do serviço do Authelia
+          port: 9091 # 🔴 CORRIGIDO: O Helm chart do Authelia usa a porta 9091 por padrão
+  tls:
+    # Se você usa o certificado da Cloudflare (ou Let's Encrypt no Traefik), 
+    # certifique-se de deixar o bloco TLS ativo, mesmo que vazio, para o Traefik aceitar conexões HTTPS.
+    secretName: "" 
