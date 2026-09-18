@@ -12,7 +12,7 @@ spec:
     helm:
       values: |
         # 1. Configurações Globais (Fora do configMap)
-        address: https://devtechdojo.com.br
+        #address: https://devtechdojo.com.br
 
         # 2. Configurações que alimentam o arquivo de configuração do Authelia
         config:
