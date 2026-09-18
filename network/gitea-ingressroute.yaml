@@ -10,5 +10,5 @@ spec:
     - match: Host(`repo.devtechdojo.com.br`)
       kind: Rule
       services:
-        - name: gitea # Nome do Service do Gitea gerado pelo Helm
-          port: 3000  # Porta padrão do container/service do Gitea
+        - name: gitea-http
+          port: 3000
