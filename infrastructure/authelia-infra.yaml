@@ -11,13 +11,15 @@ spec:
     targetRevision: 0.11.22
     helm:
       values: |
+        # 1. Configurações Globais (Fora do configMap)
         address: https://devtechdojo.com.br
-        configMap:
-         # address: https://devtechdojo.com.br
+
+        # 2. Configurações que alimentam o arquivo de configuração do Authelia
+        config:
+          theme: light
           session:
             cookies:
-              - domain: auth.devtechdojo.com.br
-          # CASAMENTO EXATO COM OS TEMPLATES DO CHART 0.11.22:
+              - domain: devtechdojo.com.br
           authentication_backend:
             ldap:
               enabled: false
@@ -25,22 +27,21 @@ spec:
               enabled: true
               path: /config/users_database.yml
               watch: true
-          
           storage:
             local:
               enabled: true
           notifier:
             filesystem:
               enabled: true
-
-          # IMPORTANTE: Garante que as regras de controle de acesso existam textualmente
           access_control:
             default_policy: one_factor
             rules: []
 
+        # 3. Referência à sua Secret de senhas/chaves do sistema
         secret:
           existingSecret: authelia-secrets
 
+        # 4. Injeção do arquivo de usuários criado na Secret authelia-users
         pod:
           extraVolumes:
             - name: users-database
@@ -50,6 +51,7 @@ spec:
             - name: users-database
               mountPath: /config/users_database.yml
               subPath: users_database.yml
+
 
   destination:
     server: https://kubernetes.default.svc
