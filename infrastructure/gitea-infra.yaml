@@ -16,6 +16,8 @@ spec:
           config:
             APP_NAME: "Meu Gitea"
             RUN_MODE: prod
+        ingress:
+          enabled: false # <<--- DESATIVADO AQUI
 
         # Desativa o banco de dados em Alta Disponibilidade padrão do chart...
         postgresql-ha:
