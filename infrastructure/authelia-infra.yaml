@@ -27,11 +27,12 @@ spec:
             filesystem:
               enabled: true
 
-        # Força o Chart a usar a sua secret existente para as variáveis de ambiente globais
+          access_control:
+            default_policy: one_factor
+
         secret:
           existingSecret: authelia-secrets
 
-        # Injeta o arquivo usando o bloco de customização do Pod nativo do Chart
         pod:
           extraVolumes:
             - name: users-database
