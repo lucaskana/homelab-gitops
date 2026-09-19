@@ -12,6 +12,8 @@ spec:
       services:
         - name: authelia # Nome exato do serviço do Authelia no Kubernetes
           port: 80 
+      middlewares:
+        - name: authelia-headers # Vincula o middleware aqui
   tls:
     # Se você usa o certificado da Cloudflare (ou Let's Encrypt no Traefik), 
     # certifique-se de deixar o bloco TLS ativo, mesmo que vazio, para o Traefik aceitar conexões HTTPS.
