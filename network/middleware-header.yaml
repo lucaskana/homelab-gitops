@@ -1,0 +1,17 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: authelia-headers
+  namespace: authelia
+spec:
+  forwardAuth:
+    # URL interna ou externa do seu serviço Authelia
+    # address: http://authelia.authelia.svc.cluster.local/api/authz/forward-auth
+    address: http://authelia-authelia.authelia.svc.cluster.local/api/authz/forward-auth
+    trustForwardHeader: true
+    authResponseHeaders:
+      - "Remote-User"
+      - "Remote-Groups"
+      - "Remote-Name"
+      - "Remote-Email"
+      - "Set-Cookie" # Permite que o cookie 'authelia_session' seja entregue ao navegador
