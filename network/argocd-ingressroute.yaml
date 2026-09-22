@@ -3,6 +3,21 @@ kind: IngressRoute
 metadata:
   name: argocd-server-http
   namespace: argocd
+  annotations:
+    # 1. Ativa a descoberta automática
+    gethomepage.dev/enabled: "true"
+    # 2. Define o nome que aparecerá no card
+    gethomepage.dev/name: "ArgoCD"
+    # 3. Define o grupo/categoria no painel
+    gethomepage.dev/group: "CI/CD"
+    # 4. Ícone oficial mapeado pelo dashboard
+    gethomepage.dev/icon: "argocd.png"
+    # 5. OBRIGATÓRIO PARA TRAEFIK: O endereço que o card vai abrir ao ser clicado
+    gethomepage.dev/href: "https://homepage.devtechdojo.com.br"
+    # 6. Opcional: Descrição curta do serviço
+    gethomepage.dev/description: "Gerenciador de GitOps do Cluster"
+    # 7. Opcional: Monitora a saúde dos Pods do ArgoCD na bolinha de status
+    gethomepage.dev/pod-selector: "app.kubernetes.io/name=argocd-server"
 spec:
   entryPoints:
     - websecure # Ouve na porta 443 do Traefik
