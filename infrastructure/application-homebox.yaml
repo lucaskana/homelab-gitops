@@ -1,0 +1,52 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: homebox
+  namespace: argocd
+spec:
+  project: default
+  
+  source:
+    chart: homebox
+    repoURL: https://bythehugo.github.io/homebox-helm/
+    targetRevision: 0.3.0
+    
+    helm:
+      values: |
+        env:
+          HBOX_LOG_LEVEL: info
+          # CORREÇÃO 1: O nome correto do driver para o Homebox é 'sqlite3'
+          HBOX_DATABASE_DRIVER: sqlite3
+          # CORREÇÃO 2: Aponta explicitamente o caminho do banco dentro da pasta persistente (/data)
+          HBOX_DATABASE_SQLITE_PATH: /data/homebox.db
+          HBOX_AUTH_API_KEY_PEPPER: "MPxkFGag2DDsdXJdccGGQuH/j9kYlpp36daTHLRCmHc64HEDe3oOJw3x43vx/3sa"
+
+        # Mantemos o subchart desativado
+        postgresql:
+          enabled: false
+
+        # Armazenamento local persistente para o arquivo .db
+        persistence:
+          enabled: true
+          size: 5Gi
+
+        ingress:
+          enabled: true
+          hosts:
+            - host: homebox.devtechdojo.com.br
+              paths:
+                - path: /
+                  pathType: ImplementationSpecific
+
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: homebox
+
+  # Política de sincronização automática e criação do namespace
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

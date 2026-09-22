@@ -1,0 +1,60 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: homepage
+  namespace: argocd
+spec:
+  project: default
+  
+  source:
+    chart: homepage
+    repoURL: https://harish2k01.github.io/helm-charts
+    targetRevision: 0.1.0
+    
+    helm:
+      values: |
+        homepage:
+          allowedHosts:
+            - homepage.devtechdojo.com.br
+        ingress:
+          enabled: true
+          className: traefik
+          annotations:
+            traefik.ingress.kubernetes.io/router.middlewares: "authelia-authelia-headers@kubernetescrd"
+          hosts:
+            - host: homepage.devtechdojo.com.br
+              paths:
+                - path: /
+                  pathType: Prefix
+
+        # O que colocar na tela do Homepage (Services, Bookmarks, etc.)
+        config:
+          # Estrutura de links organizados por categorias
+          services:
+            - "Infraestrutura":
+                - "HomeBox":
+                    icon: homebox.png       # Ícone padrão reconhecido pelo Homepage
+                    href: "https://devtechdojo.com.br"
+                    description: "Gerenciador de Inventário e Bens"
+                - "ArgoCD":
+                    icon: argocd.png
+                    href: "https://devtechdojo.com.br" # Substitua se for outro link
+                    description: "GitOps Continuous Delivery"
+
+          # Configurações globais do sistema (opcional)
+          settings:
+            title: "DevTechDojo Dashboard"
+            favicon: https://devtechdojo.com.br
+
+  # CORREÇÃO: Este bloco agora está na raiz do 'spec', alinhado corretamente
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: homepage
+
+  # Política de sincronização automática e criação do namespace
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
