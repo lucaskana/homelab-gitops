@@ -63,3 +63,29 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+    
+  # --- INJEÇÃO DO PATCH PARA ARRUMAR AS PERMISSÕES ---
+  # Isso força o ArgoCD a modificar o Deployment gerado pelo Helm, 
+  # inserindo um initContainer que corrige as permissões da pasta como root.
+  ignoreDifferences: []
+  info: []
+  
+  template: null
+  
+  # O bloco abaixo intercepta o Deployment do Helm e injeta a correção direto no Kubernetes
+  patches:
+    - target:
+        kind: Deployment
+        name: homepage
+      patch: |
+        - op: add
+          path: /spec/template/spec/initContainers
+          value:
+            - name: fix-permissions
+              image: alpine:latest
+              command: ["sh", "-c", "chown -R 1000:1000 /app/config && chmod -R 775 /app/config"]
+              securityContext:
+                runAsUser: 0
+              volumeMounts:
+                - name: config
+                  mountPath: /app/config
