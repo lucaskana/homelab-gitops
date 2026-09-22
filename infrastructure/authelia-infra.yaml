@@ -27,7 +27,7 @@ spec:
             rules:
               - domain: ['trace.devtechdojo.com.br',  'code.devtechdojo.com.br']
                 policy: two_factor
-              - domain: ['draw.devtechdojo.com.br', 'rackpeek.devtechdojo.com.br' , 'devtechdojo.com.br']
+              - domain: ['draw.devtechdojo.com.br', 'homepage.devtechdojo.com.br' , 'devtechdojo.com.br']
                 policy: one_factor
 
         usersDatabase:
