@@ -30,13 +30,15 @@ spec:
               - domain: ['draw.devtechdojo.com.br', 'homepage.devtechdojo.com.br' , 'devtechdojo.com.br']
                 policy: one_factor
 
-        # Configuração para injetar o Secret criado no passo anterior
-        secret:
-          existingSecret: "authelia-users-secret"
-          
-        # Informa ao Authelia onde o arquivo injetado pelo Secret estará localizado dentro do container
         usersDatabase:
-          path: /config/users_database.yml
+          users:
+            admin:
+              disabled: false
+              displayname: "Admin"
+              email: "admin@example.com"
+              password: "$argon2id$v=19$m=65536,t=3,p=4$JLn3lrSzMpwlQKRPsy3qHg$+UCYjwo/sg47MXae02m09niu7qVDr72hgJTpbQv39yo"
+              groups:
+                - admins
 
 
   destination:
