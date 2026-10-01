@@ -1,0 +1,34 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: immich
+  namespace: argocd # Namespace onde o ArgoCD está instalado
+spec:
+  project: default
+  source:
+    # 1. A URL do repositório deve terminar na coleção 'immich-charts'
+    repoURL: https://repo.helmforge.dev
+    # CORREÇÃO: O nome do chart correto dentro do repositório
+    chart: immich
+    targetRevision: 1.2.9
+
+    helm:
+      values: |
+        nodeSelector: { kubernetes.io/hostname: "k8s-master" }
+
+        server:
+          persistence:
+            size: 70Gi
+
+  # Destino dentro do seu cluster
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: immich # Namespace onde o Immich será implantado
+
+  # Políticas de Sincronização
+  syncPolicy:
+    automated:
+      prune: true     # Remove recursos antigos se você deletar do Git/Helm
+      selfHeal: true  # Corrige desvios manuais feitos no cluster (drift)
+    syncOptions:
+      - CreateNamespace=true
