@@ -1,0 +1,40 @@
+apiVersion: traefik.io/v1alpha1
+kind: TLSOption
+metadata:
+  name: default
+  namespace: teleport-cluster
+spec:
+  minVersion: VersionTLS12
+  sniStrict: false
+  alpnProtocols:
+    - h2
+    - http/1.1
+---
+# 1. O TRANSPORTE VOLTA PARA O NAMESPACE DO TELEPORT
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: teleport-insecure-transport
+  namespace: teleport-cluster
+spec:
+  insecureSkipVerify: true
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: teleport-custom-ingressroute
+  namespace: teleport-cluster
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`teleport.devtechdojo.com.br`)
+      kind: Rule
+      services:
+        - name: teleport
+          port: 443
+          scheme: https
+          # 2. CORREÇÃO CRUCIAL: Nome 100% LIMPO, sem prefixo de namespace e sem @kubernetes!
+          serversTransport: teleport-insecure-transport
+  tls:
+    secretName: cloudflare-origin-tls

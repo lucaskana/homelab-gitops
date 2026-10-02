@@ -1,0 +1,38 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: teleport
+  namespace: argocd
+spec:
+  project: default
+  
+  source:
+    chart: teleport-cluster
+    repoURL: https://charts.releases.teleport.dev
+    targetRevision: 18.11.2
+    
+    helm:
+      values: |
+        clusterName: teleport.devtechdojo.com.br
+        proxyListenerMode: multiplex
+
+        # Tipo de serviço correto para o Proxy em ClusterIP
+        proxy:
+          service:
+            type: ClusterIP
+
+        ingress:
+          enabled: false
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: teleport-cluster
+
+  # Política de sincronização automática e criação do namespace
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+  
