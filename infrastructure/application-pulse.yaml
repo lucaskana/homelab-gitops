@@ -1,0 +1,38 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: pulse
+  namespace: argocd
+spec:
+  project: default
+  
+  source:
+    chart: pulse
+    repoURL: https://rcourtman.github.io/Pulse
+    targetRevision: 6.4.5
+    
+    helm:
+      values: |
+        ingress:
+          enabled: true
+          className: "traefik"
+          annotations: {}
+          hosts:
+            - host: pulse.devtechdojo.com.br
+              paths:
+                - path: /
+                  pathType: Prefix
+          tls: []
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: pulse
+
+  # Política de sincronização automática e criação do namespace
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+  
