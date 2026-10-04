@@ -1,0 +1,56 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: grafana
+  namespace: argocd
+spec:
+  project: default
+  
+  source:
+    chart: grafana
+    repoURL: https://grafana-community.github.io/helm-charts
+    targetRevision: 13.2.7
+    
+    helm:
+      values: |
+        ingress:
+          enabled: true
+          ingressClassName: traefik
+          # Values can be templated
+          annotations: {}
+            # kubernetes.io/ingress.class: nginx
+            # kubernetes.io/tls-acme: "true"
+          labels: {}
+          path: /
+          pathType: Prefix
+
+          hosts:
+            - monitor.devtechdojo.com.br
+          ## Extra paths to prepend to every host configuration. This is useful when working with annotation based services.
+          extraPaths: []
+          # - path: /*
+          #   pathType: Prefix
+          #   backend:
+          #     service:
+          #       name: ssl-redirect
+          #       port:
+          #         name: use-annotation
+
+
+          tls: []
+          #  - secretName: chart-example-tls
+          #    hosts:
+          #      - chart-example.local
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+
+  # Política de sincronização automática e criação do namespace
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+  

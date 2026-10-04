@@ -1,0 +1,16 @@
+# Você ignora o "global:" completamente e vai direto para a configuração do banco
+auth:
+  # Obrigatoriamente "postgres" devido à validação do Immich que vimos antes
+  username: "postgres"
+  # Defina a senha do banco aqui
+  password: "sua_senha_segura_aqui"
+  # O nome do banco de dados que o Immich vai usar
+  database: "immich"
+
+# Configuração essencial de armazenamento para você não perder os dados
+primary:
+  persistence:
+    enabled: true
+    size: 10Gi
+    # Se o seu cluster não tiver um StorageClass padrão, descomente a linha abaixo e insira o seu
+    storageClass: "local-path"

@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grafana-ingress
+  namespace: observability
+spec:
+  ingressClassName: traefik
+  rules:
+  - host: monitor-cloud.devtechdojo.com.br # Mude para o domínio do seu homelab ou deixe sem host para aceitar o IP
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: kube-prom-stack-grafana
+            port:
+              number: 80

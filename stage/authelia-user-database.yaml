@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: authelia-users-secret
+  namespace: authelia # Certifique-se de que está no mesmo namespace onde o Authelia será instalado
+type: Opaque
+stringData:
+  users_database.yml: |
+      users:
+        admin:
+          disabled: false
+          displayname: "Admin"
+          email: "admin@example.com"
+          password: "$argon2id$v=19$m=65536,t=3,p=4$c2FsdHN0cmluZw$315ffpFzRmbVV6skrhnS7EqmFsF/Iz5giq6IBJU4WyE"
+          groups:
+            - admins

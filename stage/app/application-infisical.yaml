@@ -1,0 +1,41 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: infisical
+  namespace: argocd
+spec:
+  project: default
+  
+  source:
+    chart: infisical-standalone
+    repoURL: https://dl.cloudsmith.io/public/infisical/helm-charts/helm/charts/
+    targetRevision: 1.3.0
+    
+    helm:
+      values: |
+        infisical:
+          image:
+            repository: infisical/infisical
+            tag: "v0.161.11"  # Check https://hub.docker.com/r/infisical/infisical/tags for latest
+            pullPolicy: IfNotPresent
+          replicaCount: 2
+
+        ingress:
+          enabled: true
+          className: traefik
+          hostName: "infisical.devtechdojo.com.br"  # Replace with your domain
+          nginx:
+            enabled: true  # Bundles an ingress-nginx controller with class "infisical-nginx"
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: infisical
+
+  # Política de sincronização automática e criação do namespace
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+  

@@ -1,0 +1,55 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: homepage
+  namespace: argocd
+spec:
+  project: default
+  
+  source:
+    chart: homepage
+    repoURL: https://harish2k01.github.io/helm-charts
+    targetRevision: 0.1.0
+    
+    helm:
+      values: |
+        homepage:
+          allowedHosts:
+            - homepage.devtechdojo.com.br
+          # 2. Aponta para o ConfigMap que criaremos manualmente (destravado)
+        ingress:
+          enabled: true
+          className: traefik
+          annotations:
+            traefik.ingress.kubernetes.io/router.middlewares: "authelia-authelia-headers@kubernetescrd"
+          hosts:
+            - host: homepage.devtechdojo.com.br
+              paths:
+                - path: /
+                  pathType: Prefix
+          config:
+            enabled: false
+          # 2. Ativamos a persistência por PVC. Sendo um disco real, o container 
+        # ganha permissão total para ler e escrever o que quiser em /app/config
+        persistence:
+          config:
+            enabled: true
+            accessModes:
+              - ReadWriteOnce
+            size: 1Gi
+            # Se você tiver um StorageClass padrão no cluster (ex: local-path, longhorn), 
+            # pode deixar vazio "". Se tiver um específico, digite o nome dele abaixo:
+            storageClassName: "" 
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: homepage
+
+  # Política de sincronização automática e criação do namespace
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+  

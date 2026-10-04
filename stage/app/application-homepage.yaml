@@ -1,0 +1,83 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: homepage
+  namespace: argocd
+spec:
+  project: default
+  
+  source:
+    chart: homepage
+    repoURL: https://harish2k01.github.io/helm-charts
+    targetRevision: 0.1.0
+    
+    helm:
+      values: |
+        ingress:
+          enabled: true
+          className: traefik
+          annotations:
+            traefik.ingress.kubernetes.io/router.middlewares: "authelia-authelia-headers@kubernetescrd"
+          hosts:
+            - host: homepage.devtechdojo.com.br
+              paths:
+                - path: /
+                  pathType: Prefix
+        homepage:
+          allowedHosts:
+            - homepage.devtechdojo.com.br
+          config:
+            enabled: true
+            files:
+              kubernetes.yaml: |
+                mode: cluster
+                ingress: true
+                gateway: true
+              settings.yaml: |
+                title: Homepage
+              bookmarks.yaml: |
+                - Developer:
+                    - GitHub:
+                        - abbr: GH
+                          href: https://github.com/
+              services.yaml: |
+                - Cluster:
+                    - teste:
+                        href: https://kubernetes.io/
+                        description: Kubernetes documentation
+                    - teste2:
+                        href: https://kubernetes.io/
+                        description: Kubernetes documentation
+              widgets.yaml: |
+                - kubernetes:
+                    cluster:
+                      show: true
+                      cpu: true
+                      memory: true
+                      showLabel: true
+                      label: cluster
+                    nodes:
+                      show: true
+                      cpu: true
+                      memory: true
+                      showLabel: true
+                - search:
+                    provider: duckduckgo
+                    target: _blank
+              docker.yaml: ""
+              custom.css: ""
+              custom.js: "" 
+              proxmox.yaml: ""
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: homepage
+
+  # Política de sincronização automática e criação do namespace
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+  

@@ -1,0 +1,54 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: authentik
+  namespace: argocd
+spec:
+  project: default
+  
+  source:
+    chart: authentik
+    repoURL: https://charts.goauthentik.io
+    targetRevision: 2026.8.3 # Substitua pela versão desejada do chart
+    
+    helm:
+      values: |
+        #global:
+        #  envFrom:
+        #      - secretRef:
+        #            name: akms
+        # Configurações globais do Authentik e do Banco de Dados
+        authentik:
+          # Substitua pela sua chave secreta gerada via: openssl rand -base64 36
+          secret_key: "IUXVLdvHMx1SZit7tc6IBvYWsZ8S0GJkoiOe0KrhjJ66OEwU"
+          # ADICIONE ESTE BLOCO ABAIXO: (Diz ao Authentik como logar no banco)
+          postgresql:
+            password: "UmaSenhaForteParaOBancoAqui"
+        
+        # PostgreSQL embutido (Recomendado apenas para Testes/Laboratório)
+        postgresql:
+          enabled: true
+          auth:
+            password: "UmaSenhaForteParaOBancoAqui"
+
+        # Configuração do Servidor e do Ingress
+        server:
+          ingress:
+            enabled: true
+            ingressClassName: "traefik"
+            annotations: {}
+            hosts:
+              - authentik.devtechdojo.com.br
+            tls: []
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: authentik
+
+  # Política de sincronização automática e criação do namespace
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

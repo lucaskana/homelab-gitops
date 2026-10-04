@@ -1,0 +1,41 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kong-gateway
+  namespace: argocd # O namespace onde o seu ArgoCD está rodando
+spec:
+  project: default
+  source:
+    chart: ingress
+    repoURL: https://charts.konghq.com
+    targetRevision: 0.24.0
+    helm:
+      values: |
+        postgresql:
+          enabled: true
+          auth:
+            database: kong
+            username: kong
+            password: "SuaSenhaSeguraAqui"
+        env:
+          database: postgres
+          admin_gui_url: http://localhost:8002
+        admin:
+          enabled: true
+          http:
+            enabled: true
+          type: NodePort
+          httpNodePort: 30001
+        manager:
+          enabled: true
+          type: NodePort
+          httpNodePort: 30002
+  destination:
+    server: https://kubernetes.default.svc # Aponta para o próprio cluster local
+    namespace: kong # Namespace de destino do Kong
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true # Cria o namespace 'kong' automaticamente se não existir
