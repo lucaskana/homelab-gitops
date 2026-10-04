@@ -55,6 +55,8 @@ sudo rsync -av /var/lib/rancher/k3s/storage/pvc-8dd6fc92-66f8-477a-b6b8-01fddeb2
 helm repo add kubernetes-homelab-helm-charts https://harish2k01.github.io/helm-charts/
 helm repo update
 helm show values kubernetes-homelab-helm-charts/homepage
+helm show values pulse/pulse
+helm search repo pulse/pulse --versions
 
 helm repo list
 helm search repo kubernetes-homelab-helm-charts
