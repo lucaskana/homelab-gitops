@@ -22,9 +22,9 @@ spec:
           HBOX_AUTH_API_KEY_PEPPER: "MPxkFGag2DDsdXJdccGGQuH/j9kYlpp36daTHLRCmHc64HEDe3oOJw3x43vx/3sa"
 
         # Mantemos o subchart desativado
-        postgresql:
-          enabled: false
-          storageClass: local-path
+        #postgresql:
+        #  enabled: false
+        #  storageClass: local-path
 
         # Armazenamento local persistente para o arquivo .db
         persistence:
