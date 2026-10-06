@@ -24,6 +24,7 @@ spec:
         # Mantemos o subchart desativado
         postgresql:
           enabled: false
+          storageClass: local-path
 
         # Armazenamento local persistente para o arquivo .db
         persistence:
