@@ -21,6 +21,11 @@ spec:
           service:
             type: ClusterIP
 
+        ssh:
+          enabled: true
+          labels:
+            env: homelab-node
+
         ingress:
           enabled: false
 

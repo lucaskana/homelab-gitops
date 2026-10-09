@@ -40,7 +40,11 @@ spec:
             hosts:
               - authentik.devtechdojo.com.br
             tls: []
-
+        # 2. Vinculação do Blueprint Declarativo
+        blueprints:
+          # O Helm montará automaticamente os arquivos contidos neste ConfigMap
+          configMaps:
+            - authentik-bootstrap-blueprint #  Correto (Apenas o nome do ConfigMap como string)
   destination:
     server: https://kubernetes.default.svc
     namespace: authentik

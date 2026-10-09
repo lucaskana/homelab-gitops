@@ -13,6 +13,9 @@ spec:
     
     helm:
       values: |
+        grafana.ini:
+          server:
+            root_url: https://monitor.devtechdojo.com.br
         ingress:
           enabled: true
           ingressClassName: traefik
