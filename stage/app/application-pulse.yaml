@@ -1,0 +1,65 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: pulse
+  namespace: argocd
+spec:
+  project: default
+  
+  source:
+    chart: pulse
+    repoURL: https://rcourtman.github.io/Pulse
+    targetRevision: 6.4.5
+    
+    helm:
+      values: |
+        ingress:
+          enabled: true
+          className: "traefik"
+          annotations: {}
+          hosts:
+            - host: pulse.devtechdojo.com.br
+              paths:
+                - path: /
+                  pathType: Prefix
+          tls: []
+        server:
+          env:
+            # https://integrations.goauthentik.io/monitoring/pulse/
+            - name: "PULSE_DEPLOYMENT_METHOD"
+              value: "kubernetes_helm"
+            - name: "OIDC_ENABLED"
+              value: "true"
+            - name: "OIDC_ISSUER_URL"
+              value: "https://authentik.devtechdojo.com.br/application/o/pulse/"
+            - name: "OIDC_CLIENT_ID"
+              value: "e4FYv44aOvjCD7c8UJrvHuiR5a4cnFlsC4Iz5Yz4"
+            - name: "OIDC_CLIENT_SECRET"
+              value: "6eIiZwQhpy8PY7obAlxZGRGxO0Fqfy7A8oDAgucTt8Pxmg7amiK5DgtGMVs50CmMATHM6gwiiH8TDWCpvZoZNdHrWXbYEXlG3oAEzGXJnt7QHF1rbMwUfSxSp0BtOiIF"
+            - name: "OIDC_REDIRECT_URL"
+              value: "https://pulse.devtechdojo.com.br/api/oidc/callback"
+            - name: "OIDC_LOGOUT_URL"
+              value: "https://authentik.devtechdojo.com.br/application/o/pulse/end-session/"
+            - name: "OIDC_SCOPES"
+              value: "openid profile email"
+            - name: "OIDC_ALLOWED_GROUPS"
+              value: "pulse-admin"
+            - name: "OIDC_GROUP_ROLE_MAPPINGS"
+              value: "pulse-admin=admin"
+            - name: "OIDC_GROUPS_CLAIM"
+              value: "groups"
+            - name: "PULSE_AUTH_HIDE_LOCAL_LOGIN"
+              value: "true"
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: pulse
+
+  # Política de sincronização automática e criação do namespace
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+  
