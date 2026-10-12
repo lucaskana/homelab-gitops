@@ -17,6 +17,12 @@ spec:
         grafana.ini:
           server:
             root_url: https://monitor.devtechdojo.com.br
+          # --- ADDED CODE TO DISABLE LOGIN FORM ---
+          auth:
+            disable_login_form: true
+          auth.basic:
+            enabled: false
+          # ----------------------------------------
           auth.generic_oauth:
             enabled: true
             name: "OIDC"
