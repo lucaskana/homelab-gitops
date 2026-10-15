@@ -32,16 +32,12 @@ spec:
               value: "true"
             - name: "OIDC_ISSUER_URL"
               value: "https://authentik.devtechdojo.com.br/application/o/pulse/"
-            - name: "OIDC_CLIENT_ID"
-              value: "e4FYv44aOvjCD7c8UJrvHuiR5a4cnFlsC4Iz5Yz4"
-            - name: "OIDC_CLIENT_SECRET"
-              value: "6eIiZwQhpy8PY7obAlxZGRGxO0Fqfy7A8oDAgucTt8Pxmg7amiK5DgtGMVs50CmMATHM6gwiiH8TDWCpvZoZNdHrWXbYEXlG3oAEzGXJnt7QHF1rbMwUfSxSp0BtOiIF"
             - name: "OIDC_REDIRECT_URL"
               value: "https://pulse.devtechdojo.com.br/api/oidc/callback"
             - name: "OIDC_LOGOUT_URL"
               value: "https://authentik.devtechdojo.com.br/application/o/pulse/end-session/"
             - name: "OIDC_SCOPES"
-              value: "openid profile email"
+              value: openid profile email offline_access
             - name: "OIDC_ALLOWED_GROUPS"
               value: "pulse-admin"
             - name: "OIDC_GROUP_ROLE_MAPPINGS"
@@ -50,6 +46,17 @@ spec:
               value: "groups"
             - name: "PULSE_AUTH_HIDE_LOCAL_LOGIN"
               value: "true"
+          extraEnv:
+            - name: OIDC_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: oauth-pulse-k8s-secret
+                  key: OIDC_CLIENT_ID            # Chave correspondente dentro da Secret
+            - name: OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: oauth-pulse-k8s-secret
+                  key: OIDC_CLIENT_SECRET
 
   destination:
     server: https://kubernetes.default.svc
