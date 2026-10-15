@@ -30,22 +30,45 @@ spec:
         projectSlug: "homelab-h-npj"
         environmentSlug: "staging"
         secretsPath: "/"
+--- # Secrets Grafana / Pulse
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: oauth-grafana-k8s-secret
+  namespace: monitoring # 🟢 OBRIGATÓRIO: Mesmo namespace onde o seu Grafana roda
+spec:
+  refreshInterval: "1m"
+  secretStoreRef:
+    name: infisical-backend
+    kind: ClusterSecretStore # 💡 Certifique-se de que o Store é do tipo Cluster (Global)
+  target:
+    name: oauth-grafana-k8s-secret
+    creationPolicy: Owner
+  data:
+    - secretKey: AUTH_CLIENT_ID
+      remoteRef:
+        key: CLIENT_ID_GRAFANA
+    - secretKey: AUTH_CLIENT_SECRET
+      remoteRef:
+        key: CLIENT_SECRET_GRAFANA
 ---
 apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:
-  name: minha-app-secrets
-  namespace: infisical
+  name: pulse-oauth-secrets
+  namespace: pulse # Namespace de destino do Pulse
 spec:
   refreshInterval: "1m"
   secretStoreRef:
     name: infisical-backend
     kind: ClusterSecretStore
   target:
-    name: k8s-native-secret
+    name: oauth-pulse-k8s-secret # Nome da secret gerada no K8s
     creationPolicy: Owner
   data:
-    - secretKey: CLIENT_ID_GRAFANA
+    - secretKey: OIDC_CLIENT_ID
       remoteRef:
-        key: CLIENT_ID_GRAFANA
-        # environment: "production"
+        key: CLIENT_ID_PULSE # Nome da variável correspondente dentro do Infisical
+    - secretKey: OIDC_CLIENT_SECRET
+      remoteRef:
+        key: CLIENT_SECRET_PULSE # Nome da variável correspondente dentro do Infisical
