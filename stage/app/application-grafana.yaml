@@ -14,6 +14,12 @@ spec:
     helm:
       values: |
         assertNoLeakedSecrets: false
+        extraSecretMounts:
+          - name: oauth-secrets-volume
+            mountPath: /etc/secrets/oauth
+            secretName: oauth-grafana-k8s-secret # Nome exato da Secret criada pelo ESO
+            readOnly: true
+            optional: false
         grafana.ini:
           server:
             root_url: https://monitor.devtechdojo.com.br
@@ -27,8 +33,8 @@ spec:
             enabled: true
             name: "OIDC"
             allow_sign_up: true
-            client_id:  "jVF9LARODcQZFkkOKex6BT8Gn2d2ocfoMeA9Qo91"
-            client_secret: "ofh6fovKkgbvU9EleYqrjnY8nIdbcNb37L6By3MSP5FXqiOHUu1xbZND2xVY1Qz7F11S85uNM5mBf6RrqQ0h1KL1aOhMNghqMIm2heLgZx6Wezdm3sBLHhsyRGqahJ6t"
+            client_id: "$__file{/etc/secrets/oauth/AUTH_CLIENT_ID}"
+            client_secret: "$__file{/etc/secrets/oauth/AUTH_CLIENT_SECRET}"
             scopes: openid profile email groups
             auth_url: "https://authentik.devtechdojo.com.br/application/o/authorize/"
             token_url: "https://authentik.devtechdojo.com.br/application/o/token/"
