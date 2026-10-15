@@ -57,6 +57,15 @@ helm repo update
 helm show values kubernetes-homelab-helm-charts/homepage
 helm show values pulse/pulse
 helm search repo pulse/pulse --versions
+helm search repo infisical-helm-charts/infisical --versions
+helm search repo infisical-helm-charts/secrets-operator --versions
+
+helm show values authentik/authentik
+helm show values authentik/authentik --version 2026.8.3 >  authentik.values
+
+helm show values infisical-helm-charts/infisical-standalone  --version 1.11.0 >  infisical.values
+helm show values infisical-helm-charts/secrets-operator  --version 0.11.11 >  operator.values
+helm show values grafana-community/grafana > grafana.values
 
 helm repo list
 helm search repo kubernetes-homelab-helm-charts
@@ -65,5 +74,42 @@ helm search repo kubernetes-homelab-helm-charts/adguard-home --versions
 helm template kubernetes-homelab-helm-charts/adguard-home --generate-name
 helm template meu-adguard kubernetes-homelab-helm-charts/adguard-home -f meu-values.yaml
 
+
+kubectl delete app infisical -n argocd
+kubectl delete app grafana -n argoc
+kubectl patch app grafana -n argocd -p '{"metadata":{"finalizers":null}}' --type=merge
+kubectl delete all --all -n infisical
+kubectl delete ns infisical
+
+kubectl debug -it grafana-b5cd5ff47-l9pm2 -n monitoring --image=busybox --target=grafana
+
+grafana-678747f5cb-xft4w
+
+```
+
+# Secrets Infisical
+```bash
+# Install ESO Kubernetes
+# Passo 1: Adicionar o Repositório Oficial do ESO
+helm repo add external-secrets https://charts.external-secrets.io
+helm repo update
+# Passo 2: Instalar o Operador
+helm install external-secrets external-secrets/external-secrets \
+  --namespace external-secrets \
+  --create-namespace \
+  --set installCRDs=true
+
+# Passo 3: Validar se a instalação deu certo
+kubectl get pods -n external-secrets
+
+# Aplicar config Infisical
+kubectl apply -f manifesto-unico-infisical-eso.yaml
+
+# Comandos adicionais
+kubectl get secretstore infisical-backend -n infisical
+kubectl delete secretstore infisical-backend -n infisical --force --grace-period=0
+kubectl get secretstore infisical-backend -n infisical
+kubectl get externalsecret minha-app-secrets -n infisical
+kubectl get secret k8s-native-secret -n infisical -o jsonpath='{.data.CLIENT_ID_GRAFANA}' | base64 -d
 
 ```

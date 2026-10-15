@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: infisical-credentials
+  namespace: infisical
+type: Opaque
+stringData:
+  clientId: "7dd6f4c2-faf1-41ea-b39f-f8f4d411a911"
+  clientSecret: "3dd95fe24892595d8548eb67ac3a8963fb44633c356d5c057d3ef27bcc2172c3"
+---
+apiVersion: external-secrets.io/v1
+kind: ClusterSecretStore
+metadata:
+  name: infisical-backend
+spec:
+  provider:
+    infisical:
+      hostAPI: https://infisical.devtechdojo.com.br
+      auth:
+        universalAuthCredentials:
+          clientId:
+            name: infisical-credentials
+            key: clientId
+            namespace: infisical # 🟢 Corrigido para apontar para o namespace correto
+          clientSecret:
+            name: infisical-credentials
+            key: clientSecret
+            namespace: infisical # 🟢 Corrigido para apontar para o namespace correto
+      secretsScope:
+        projectSlug: "homelab-h-npj"
+        environmentSlug: "staging"
+        secretsPath: "/"
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: minha-app-secrets
+  namespace: infisical
+spec:
+  refreshInterval: "1m"
+  secretStoreRef:
+    name: infisical-backend
+    kind: ClusterSecretStore
+  target:
+    name: k8s-native-secret
+    creationPolicy: Owner
+  data:
+    - secretKey: CLIENT_ID_GRAFANA
+      remoteRef:
+        key: CLIENT_ID_GRAFANA
+        # environment: "production"
