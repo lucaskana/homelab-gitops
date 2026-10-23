@@ -2,40 +2,38 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: kong-gateway
-  namespace: argocd # O namespace onde o seu ArgoCD está rodando
+  namespace: argocd
 spec:
   project: default
   source:
     chart: ingress
     repoURL: https://charts.konghq.com
     targetRevision: 0.24.0
-    helm:
-      values: |
-        postgresql:
-          enabled: true
-          auth:
-            database: kong
-            username: kong
-            password: "SuaSenhaSeguraAqui"
-        env:
-          database: postgres
-          admin_gui_url: http://localhost:8002
-        admin:
-          enabled: true
-          http:
-            enabled: true
-          type: NodePort
-          httpNodePort: 30001
-        manager:
-          enabled: true
-          type: NodePort
-          httpNodePort: 30002
+    # helm:
+      # values: |
+      #   # 1. ATIVA O POSTGRES AUTOMÁTICO PELO HELM
+      #   postgresql:
+      #     enabled: true
+      #     auth:
+      #       database: kong
+      #       username: kong
+      #       password: "SuaSenhaSeguraAqui" # Defina sua senha do banco aqui
+
+      #   gateway:
+      #     env:
+      #       role: traditional
+      #       database: "postgres"
+      #       pg_host: "kong-gateway-postgresql.kong.svc.cluster.local" # Endereço interno do banco
+      #       pg_user: "kong"
+      #       pg_password: "SuaSenhaSeguraAqui" # Deve ser idêntica à senha definida acima
+      #       pg_database: "kong"
+
   destination:
-    server: https://kubernetes.default.svc # Aponta para o próprio cluster local
-    namespace: kong # Namespace de destino do Kong
+    server: https://kubernetes.default.svc
+    namespace: kong
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
-      - CreateNamespace=true # Cria o namespace 'kong' automaticamente se não existir
+      - CreateNamespace=true
